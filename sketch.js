@@ -1,3 +1,5 @@
+//
+
 var can_draw = true;
 var global_strokes = []
 var connections = []
@@ -11,10 +13,10 @@ var r = sketchpad.paper()
 var paper = sketchpad.paper()
 
 var shapes = [
-r.ellipse(190, 100, 30, 20),
-                       r.rect(290, 80, 60, 40, 10),
-                       r.rect(290, 180, 60, 40, 2),
-                       r.ellipse(450, 100, 20, 20)
+    r.ellipse(190, 100, 30, 20),
+    r.rect(290, 80, 60, 40, 10),
+    r.rect(290, 180, 60, 40, 2),
+    r.ellipse(450, 100, 20, 20)
              ];
 
 function create_circle(x, y, radius) {
@@ -99,10 +101,15 @@ function detect_edges() {
     }
     }
 }
-function get_intersections(shape) {
+function get_intersections(shape, include_lines) {
     path = shape.getPath()
     all_intersections = []
-    for (target_shape of shapes) {
+    all_shapes = shapes
+    if (include_lines){
+      all_shapes = all_shapes.concat(connections.map(x => x.bg))
+      all_shapes = all_shapes.concat(connections.map(x => x.line))
+    }
+    for (target_shape of all_shapes) {
         if (shape == target_shape) {
             continue
         } else {
@@ -141,25 +148,22 @@ sketchpad.change(function() {
     shape = R.Recognize(pdollar)
     console.log(JSON.stringify(points))
     console.log(shape)
-    intersections = get_intersections(global_strokes[global_strokes.length - 1])
     if (shape.Name == 'circle') {
         add_circle(points)
-        clear_strokes()
     } else if (shape.Name == 'scratch') {
+        intersections = get_intersections(global_strokes[global_strokes.length - 1],
+                                         true)
         for (shape of intersections) {
             shape.remove()
         }
-        stroke = global_strokes.pop()
-        stroke.remove()
    } else if (points.length) {
-       console.log('Intersections')
-       console.log(intersections)
+       intersections = get_intersections(global_strokes[global_strokes.length - 1],
+                                         false)
        if (intersections.length == 2) {
            add_edge(intersections[0], intersections[1])
-           stroke = global_strokes.pop()
-           stroke.remove()
        }
-       }
+   }
+    clear_strokes()
 });
 
 R = new PDollarRecognizer()
