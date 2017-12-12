@@ -1,3 +1,13 @@
+/**
+ * Originally grabbed from the official RaphaelJS Documentation
+ * http://raphaeljs.com/graffle.html
+ * Adopted (arrows) and commented by Philipp Strathausen http:/eters:
+ *      source shape [or connection for redrawing],
+ *      target shape,
+ *      style with { fg : linecolor, bg : background color, directed: boolean }
+ * returns:
+ *      connection { draw = function() }
+ */
 Raphael.fn.connection = function (obj1, obj2, line, bg) {
     if (obj1.line && obj1.from && obj1.to) {
         line = obj1;
@@ -61,6 +71,7 @@ var dragger = function () {
     this.oy = this.type == "rect" ? this.attr("y") : this.attr("cy");
     this.animate({"fill-opacity": .2}, 500);
 }
+
 var move = function (dx, dy) {
         var att = this.type == "rect" ? {x: this.ox + dx, y: this.oy + dy} : {cx: this.ox + dx, cy: this.oy + dy};
         this.attr(att);
@@ -68,6 +79,7 @@ var move = function (dx, dy) {
             r.connection(connections[i]);
         }
 }
+
 var up = function () {
         this.animate({"fill-opacity": 0}, 500);
         can_draw = true;
